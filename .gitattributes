@@ -1,0 +1,2 @@
+# Same line endings (LF) on every OS: rustfmt and the CI check LF, and sh scripts break with CRLF on Windows.
+* text=auto eol=lf
