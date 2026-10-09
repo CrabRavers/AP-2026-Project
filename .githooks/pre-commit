@@ -1,0 +1,8 @@
+#!/bin/sh
+# Same checks as CI, run before every commit. Enable once with: git config core.hooksPath .githooks
+set -e
+if ! cargo fmt --all --check >/dev/null; then
+    echo "pre-commit: code is not formatted. Run 'cargo fmt --all' (if the unformatted code is not yours, commit it separately as 'style: format code')." >&2
+    exit 1
+fi
+cargo clippy --workspace --all-targets -q -- -D warnings -W clippy::pedantic
