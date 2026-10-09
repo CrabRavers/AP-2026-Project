@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --all --check
+
+      - name: Crate roots carry the mandatory attributes
+        run: |
+          status=0
+          for root in crates/*/src/lib.rs crates/*/src/main.rs; do
+            [ -f "$root" ] || continue
+            for attr in '#![deny(unsafe_code)]' '#![deny(clippy::pedantic)]'; do
+              grep -qF "$attr" "$root" || { echo "::error file=$root::missing $attr"; status=1; }
+            done
+          done
+          exit $status
+
+      - name: Clippy (pedantic, no warnings)
+        run: cargo clippy --workspace --all-targets -- -D warnings -W clippy::pedantic
+
+      - name: Docs
+        run: cargo doc --workspace --no-deps
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+      # Run three times: a flaky test is a design bug (main §10.5).
+      - name: Tests
+        run: for i in 1 2 3; do cargo test --workspace || exit 1; done
