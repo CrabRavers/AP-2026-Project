@@ -1,0 +1,12 @@
+disallowed-types = [
+  { path = "std::collections::HashMap", reason = "iteration order is not deterministic; use BTreeMap (main 10.1)" },
+  { path = "std::collections::HashSet", reason = "iteration order is not deterministic; use BTreeSet (main 10.1)" },
+]
+disallowed-methods = [
+  { path = "rand::thread_rng", reason = "seed explicitly (main 10.1)", allow-invalid = true },
+  { path = "rand::rng", reason = "seed explicitly (main 10.1)", allow-invalid = true },
+  { path = "std::time::SystemTime::now", reason = "wall-clock time must not influence rules (main 10.1)" },
+]
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+allow-panic-in-tests = true
