@@ -1,6 +1,11 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
+exclude = ["common"]
+
+[workspace.dependencies]
+common = { package = "ap-2026-common-code", path = "common" }
+crossbeam-channel = "0.5"
 
 [workspace.lints.rust]
 unsafe_code = "deny"
