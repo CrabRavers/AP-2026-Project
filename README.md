@@ -66,11 +66,27 @@ These are the project's coding principles, and here they are enforced rather tha
 
 ## Development setup
 
+Clone with the common code, which is a git submodule in `common/`:
+
+```bash
+git clone --recurse-submodules <repo-url>  # or, in an existing clone: git submodule update --init
+```
+
 Run once after cloning:
 
 ```bash
 git config core.hooksPath .githooks        # pre-commit: fmt + clippy
 ```
+
+The submodule is pinned to one commit of the common code. To move to its latest `main`, then commit the new pin:
+
+```bash
+git submodule update --remote common
+```
+
+The crates use it through one workspace dependency, `common` (`common::geometry`, `common::shared`, `common::wind`,
+...). `cargo fmt --all` also checks the files in `common/`: if it fails there, the common code is unformatted
+upstream, not ours.
 
 The agents read the course specs as text from `docs/spec/` (`main.md`, `protocol.md`, `org.md`, `ai-statement.md`).
 The folder is gitignored because the specs are course material: ask a group member for a copy.
